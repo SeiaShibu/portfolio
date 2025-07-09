@@ -13,18 +13,22 @@ const Home: React.FC = () => {
 
   useEffect(() => {
     const sectionId = location.state?.scrollTo;
-    if (sectionId) {
+
+    // ✅ Scroll only if it's NOT the hero section
+    if (location.pathname === '/' && sectionId && sectionId !== 'hero') {
       const el = document.getElementById(sectionId);
       if (el) {
         el.scrollIntoView({ behavior: 'smooth' });
-        navigate(location.pathname, { replace: true }); // clear state
       }
+
+      // ✅ Clear state so it doesn’t re-trigger on refresh
+      navigate(location.pathname, { replace: true, state: {} });
     }
-  }, [location]);
+  }, [location, navigate]);
 
   return (
     <>
-      <section id="home"><Hero /></section>
+      <section id="hero"><Hero /></section>
       <section id="about"><About /></section>
       <section id="skills"><Skills /></section>
       <section id="projects"><Projects /></section>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Menu, X } from 'lucide-react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -16,7 +16,7 @@ const Header: React.FC = () => {
     { id: 'about', label: 'About', type: 'scroll' },
     { id: 'skills', label: 'Skills', type: 'scroll' },
     { id: 'projects', label: 'Projects', type: 'scroll' },
-    { id: '/blogs', label: 'Blogs', type: 'route' },
+    { id: 'blogs', label: 'Blogs', type: 'route' },
     { id: 'contact', label: 'Contact', type: 'scroll' },
   ];
 
@@ -41,22 +41,24 @@ const Header: React.FC = () => {
 
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [navItems]);
+  }, []);
 
   const handleNavClick = (item: { id: string; type: string }) => {
-    if (item.type === 'route') {
-      navigate(item.id);
-    } else {
-      if (isHome) {
-        const element = document.getElementById(item.id);
-        if (element) {
-          element.scrollIntoView({ behavior: 'smooth' });
-        }
-      } else {
-        navigate('/', { state: { scrollTo: item.id } });
-      }
-    }
     setIsMenuOpen(false);
+
+    if (item.type === 'route') {
+      navigate(`/${item.id}`);
+      return;
+    }
+
+    if (isHome) {
+      const el = document.getElementById(item.id);
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      navigate('/', {
+        state: item.id !== 'hero' ? { scrollTo: item.id } : undefined,
+      });
+    }
   };
 
   return (
@@ -67,11 +69,13 @@ const Header: React.FC = () => {
     >
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center py-4">
-          {/* Logo */}
+          {/* Logo / Brand (optional) */}
           <div
             onClick={() => handleNavClick({ id: 'hero', type: 'scroll' })}
             className="text-2xl font-bold text-gray-900 cursor-pointer hover:text-blue-600 transition-colors"
           >
+            {/* Add logo o text here if needed */}
+            
           </div>
 
           {/* Desktop Nav */}
@@ -93,7 +97,7 @@ const Header: React.FC = () => {
             ))}
           </div>
 
-          {/* Mobile Menu Icon */}
+          {/* Mobile Menu Toggle */}
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             className={`md:hidden p-2 rounded-lg transition-colors ${
@@ -104,7 +108,7 @@ const Header: React.FC = () => {
           </button>
         </div>
 
-        {/* Mobile Nav Menu */}
+        {/* Mobile Nav */}
         {isMenuOpen && (
           <div className="md:hidden absolute top-full left-0 right-0 bg-white/95 backdrop-blur-md shadow-lg border-t">
             <div className="py-4 space-y-2">
